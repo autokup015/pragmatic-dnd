@@ -8,10 +8,11 @@ Follow these steps to get the project up and running:
 
 ```bash
 # Clone the repository
+```
 
 ```shell
 git clone https://github.com/jeffreyjczy/pragmatic-dnd.git
-````
+```
 
 cd pragmatic-dnd
 
