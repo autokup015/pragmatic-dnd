@@ -8,14 +8,24 @@ Follow these steps to get the project up and running:
 
 ```bash
 # Clone the repository
+
+```shell
 git clone https://github.com/jeffreyjczy/pragmatic-dnd.git
+````
+
 cd pragmatic-dnd
 
 # Install dependencies
+
+```shell
 npm install
-* might have to use --force if there is issue *
+```
+
+- might have to use --force if there is issue \*
 
 # Start the development server
+
+```shell
 npm run dev
 ```
 
