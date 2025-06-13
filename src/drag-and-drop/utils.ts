@@ -1,6 +1,6 @@
-import { useContext, createContext } from 'react';
+import { createContext, use } from "react";
 
-import type { TItemData, TItemEntry, TListContextValue } from './types';
+import type { TItemData, TItemEntry, TListContextValue } from "./types";
 
 export function getItemRegistry() {
   const registry = new Map<string, HTMLElement>();
@@ -20,7 +20,9 @@ export function getItemRegistry() {
   return { register, getElement };
 }
 
-export function isItemData<T>(data: Record<string | symbol, unknown>): data is TItemData<T> {
+export function isItemData<T>(
+  data: Record<string | symbol, unknown>
+): data is TItemData<T> {
   return data.itemKey === true;
 }
 
@@ -42,15 +44,20 @@ export function getItemData<T>({
 }
 
 export function useListContext() {
-  const listContext = useContext(ListContext);
+  const listContext = use(ListContext);
+
+  if (!listContext) {
+    throw Error('listContext must be use listContextProvider')
+  }
+
   return listContext;
 }
 
-export const ListContext = createContext<TListContextValue>({
+export const ListContext = createContext<TListContextValue | null>({
   getListLength: () => 0,
   registerItem: () => () => {},
   reorderItem: () => {},
-  instanceId: Symbol('instance-id'),
+  instanceId: Symbol("instance-id"),
 });
 
 // Grid ---------------------------------------------------------------

@@ -1,4 +1,10 @@
-import { Card, Stack } from "@mui/material";
+import { Box, Card, Stack } from "@mui/material";
+import ReactDOM from "react-dom";
+import useDndChildren from "./drag-and-drop/hooks/use-dnd-children";
+import { ListContext } from "./drag-and-drop/utils";
+import useDndParent from "./drag-and-drop/hooks/use-dnd-parent";
+import type { TDraggableState } from "./drag-and-drop/types";
+import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types";
 
 const MOCK_ITEM_LIST = [
   { id: "1", label: "Item 1" },
@@ -14,18 +20,48 @@ const MOCK_ITEM_LIST = [
 ];
 
 export default function ProfileDnd() {
+  const { contextValue, items, scrollableRef } = useDndParent({
+    itemList: MOCK_ITEM_LIST,
+  });
+
   return (
-    <Stack spacing={2}>
-      {MOCK_ITEM_LIST.map((item) => (
-        <ProfileCard key={item.id} item={item} />
-      ))}
-    </Stack>
+    <ListContext value={contextValue}>
+      <Stack ref={scrollableRef} spacing={2}>
+        {items.map((item, index) => (
+          <ProfileCard key={item.id} item={item} index={index} />
+        ))}
+      </Stack>
+    </ListContext>
   );
 }
 
 // ----------------------------------------------------------------------
 
-function ProfileCard({ item }: { item: { id: string; label: string } }) {
+function ProfileCard({
+  item,
+  index,
+}: {
+  item: { id: string; label: string };
+  index: number;
+}) {
+  const { ref, draggableState, closestEdge } = useDndChildren({ item, index });
+
+  return (
+    <>
+      <Box ref={ref}>
+        <RenderItem item={item} />
+
+        <RenderDivideTag closestEdge={closestEdge} />
+      </Box>
+
+      <PreviewOnDrag draggableState={draggableState} item={item} />
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------------
+
+const RenderItem = ({ item }: { item: { id: string; label: string } }) => {
   return (
     <Card
       sx={{
@@ -44,4 +80,39 @@ function ProfileCard({ item }: { item: { id: string; label: string } }) {
       <p>{item.label}</p>
     </Card>
   );
-}
+};
+
+// ---------------------------------------------------------------------------------
+
+const RenderDivideTag = ({ closestEdge }: { closestEdge: Edge | null }) => {
+  if (!closestEdge) {
+    return null;
+  }
+
+  return <p>hello man</p>;
+};
+
+// ---------------------------------------------------------------------------------
+
+type TPreviewOnDragProps = {
+  draggableState: TDraggableState;
+  item: { id: string; label: string };
+};
+
+const PreviewOnDrag = ({ draggableState, item }: TPreviewOnDragProps) => {
+  if (draggableState.type !== "preview") {
+    return null;
+  }
+
+  return ReactDOM.createPortal(
+    <Card
+      sx={{
+        display: "flex",
+        padding: 1,
+      }}
+    >
+      <Box>{item.label} test</Box>
+    </Card>,
+    draggableState.container
+  );
+};
