@@ -6,9 +6,7 @@ This repository contains a React-based workshop focused on implementing **pragma
 
 Follow these steps to get the project up and running:
 
-```bash
 # Clone the repository
-```
 
 ```shell
 git clone https://github.com/jeffreyjczy/pragmatic-dnd.git
